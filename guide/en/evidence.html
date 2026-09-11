@@ -1,0 +1,166 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How can you trust what the AI concludes · NG AI SOC</title>
+<style>
+:root{--bg:#fbfbfa;--ink:#1d1f22;--ink2:#5b6068;--line:#e3e4e6;--brand:#2b5bd7;--code:#f1f2f4;--side:#f5f5f3}
+@media(prefers-color-scheme:dark){:root{--bg:#16181b;--ink:#e6e7ea;--ink2:#9aa0a8;--line:#2c3036;--brand:#8db0ff;--code:#22252a;--side:#1b1e22}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,"Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
+.wrap{display:flex;min-height:100vh}
+nav{width:260px;flex:none;background:var(--side);border-right:1px solid var(--line);padding:16px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+nav .b{display:block;font-weight:700;color:var(--brand);padding:4px 8px 12px;text-decoration:none}
+nav a{display:block;padding:6px 8px;border-radius:6px;color:var(--ink2);text-decoration:none;font-size:13px;line-height:1.35}
+nav a:hover{background:var(--code);color:var(--ink)}nav a.cur{background:var(--code);color:var(--ink);font-weight:600}
+nav .who{margin-top:16px;padding:8px;font-size:11px;color:var(--ink2);border-top:1px solid var(--line);word-break:break-all}
+nav a.lang{margin-top:10px;border-top:1px solid var(--line);padding-top:10px;color:var(--brand)}
+main{flex:1;min-width:0;padding:24px 36px 72px}article{max-width:1180px}
+h1{font-size:24px;line-height:1.25;margin:0 0 12px;text-wrap:balance}h2{font-size:18px;margin:26px 0 8px;padding-top:10px;border-top:1px solid var(--line)}h3{font-size:15px;margin:16px 0 6px}h4{font-size:14px;margin:12px 0 4px}
+p{margin:6px 0 8px}ul,ol{margin:4px 0 8px;padding-left:22px}li{margin:2px 0}li>p{margin:2px 0}.lead{color:var(--ink2)}a{color:var(--brand)}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.88em;font-family:ui-monospace,"SF Mono",Menlo,monospace}
+pre{background:var(--code);padding:10px 14px;border-radius:6px;overflow-x:auto;font-size:12px;line-height:1.45;margin:6px 0 10px}pre code{background:none;padding:0}
+pre.mermaid{background:transparent;padding:8px 0;text-align:center;font-size:14px}pre.mermaid svg{max-width:100%;height:auto}
+table{border-collapse:collapse;font-size:13px;margin:6px 0 10px;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top;line-height:1.45}th{background:var(--side)}
+blockquote{margin:8px 0;padding:6px 14px;border-left:3px solid var(--brand);color:var(--ink2);background:var(--side)}
+/* markdown's own toc wrapper is also class="toc", so styling `.toc` styled it twice - two boxes, and
+   two columns inside two columns. The box is the aside; the wrapper is flattened; the columns live on
+   the list, where an item can be told not to split across them. */
+aside.toc{background:var(--side);border:1px solid var(--line);border-radius:6px;padding:8px 16px;margin:0 0 16px;font-size:13px}
+aside.toc>div.toc{background:none;border:0;padding:0;margin:0}
+aside.toc .t{font-weight:600;margin-bottom:4px}
+aside.toc>div.toc>ul{columns:2;column-gap:24px}
+aside.toc ul{margin:0;padding-left:18px}
+aside.toc li{margin:2px 0;break-inside:avoid}
+aside.toc a{text-decoration:none}aside.toc a:hover{text-decoration:underline}
+ol.index{padding-left:22px}ol.index li{padding:6px 0;border-bottom:1px solid var(--line)}ol.index a{text-decoration:none;font-weight:500}
+.headerlink{display:none}
+@media(max-width:800px){.wrap{display:block}nav{width:auto;height:auto;position:static}main{padding:20px 16px}}
+</style></head><body><div class="wrap">
+<nav><a class="b" href="/">← NG AI SOC console</a><a href="./" class="">Product guide</a><a href="./evidence.html" class="cur">How can you trust what the AI concludes</a><a href="./proactive.html" class="">Finding threats that raised no alert, and writing the rules that would</a><a href="../evidence.html" class="lang">한국어</a><div class="who"></div></nav>
+<main><article><aside class="toc"><div class="t">Contents</div><div class="toc">
+<ul>
+<li><a href="#1-the-events-attached-to-an-alert-are-a-sample-not-the-evidence">1. The events attached to an alert are a sample, not the evidence</a></li>
+<li><a href="#2-nothing-is-called-unusual-until-it-has-been-compared-with-usual">2. Nothing is called unusual until it has been compared with usual</a></li>
+<li><a href="#3-a-number-no-tool-returned-cannot-appear-in-the-report">3. A number no tool returned cannot appear in the report</a></li>
+<li><a href="#4-we-say-what-we-can-see-before-we-say-what-we-found">4. We say what we can see before we say what we found</a></li>
+<li><a href="#5-the-grounds-are-kept-as-they-were-so-a-judgement-can-be-reviewed-later">5. The grounds are kept as they were, so a judgement can be reviewed later</a></li>
+<li><a href="#6-a-person-decides-anything-that-cannot-be-undone">6. A person decides anything that cannot be undone</a></li>
+<li><a href="#7-what-we-cannot-do-yet">7. What we cannot do yet</a></li>
+<li><a href="#8-it-works-without-threat-intelligence-gti">8. It works without threat intelligence (GTI)</a></li>
+<li><a href="#summary">Summary</a></li>
+</ul>
+</div>
+</aside><h1 id="how-can-you-trust-what-the-ai-concludes">How can you trust what the AI concludes</h1>
+<p>When the AI says "this one is a false positive", you have to be able to act on it. If you cannot, an
+analyst investigates the case again from the start — and then the AI has not removed work, it has added
+a second copy of it.</p>
+<p>So this product <strong>shows the grounds before the conclusion.</strong> Every number on the screen can be traced to
+the query that produced it, and numbers that cannot be traced are prevented from appearing at all. Here
+is how.</p>
+<h2 id="1-the-events-attached-to-an-alert-are-a-sample-not-the-evidence">1. The events attached to an alert are a sample, not the evidence</h2>
+<p>The SOAR attaches <strong>a handful of sample events</strong> to an alert. A detection that fired on 1,000 downloads
+still arrives with ten. Reading those ten and writing "ten files, routine work" is how a real incident
+gets closed.</p>
+<p>An investigation therefore counts <strong>the whole detection window</strong> again, separately from the sample the
+alert carried. When a query hits its page limit the screen says so — <code>3,000+ ⚠ page cap reached</code> — which
+means every figure above it is a <strong>floor, not a total</strong>. Presenting a capped number as exact is how an
+analyst ends up reasoning with false precision.</p>
+<h2 id="2-nothing-is-called-unusual-until-it-has-been-compared-with-usual">2. Nothing is called unusual until it has been compared with usual</h2>
+<p>A real example. An account signed in successfully <strong>from Spain and from China six minutes apart</strong> —
+a physically impossible journey, on the most privileged account in the estate. Read only the two events
+inside the detection window and it is a breach.</p>
+<p>Counting <strong>the same account's last 30 days</strong> showed sign-ins twice a day, every day, from the same two
+addresses. No attacker produces that regularity; it was the environment's own automation.</p>
+<p>An investigation asks "is this entity new or recurring" and "what is this actor's normal volume"
+<strong>before</strong> it concludes. A verdict reached without that comparison loses points in our own scoring, and
+those runs are caught in review.</p>
+<h2 id="3-a-number-no-tool-returned-cannot-appear-in-the-report">3. A number no tool returned cannot appear in the report</h2>
+<p>This is the most dangerous failure of generative AI, because a plausible invented figure <strong>cannot be
+recognised as invented by the person reading it</strong>.</p>
+<p>Two layers stand against it.</p>
+<ul>
+<li><strong>The tool response warns about itself.</strong> When a list query returns one page, the response carries the
+  sentence with it: this is a page and not a total, and the only figure you may report is "N or more".</li>
+<li><strong>Scoring catches it afterwards.</strong> Every investigation is stored together with its tool calls, and a
+  separate check compares the figures in the report against what the tools actually returned. A mismatch
+  is an <strong>automatic failure</strong>, whatever the rest of the score says.</li>
+</ul>
+<h2 id="4-we-say-what-we-can-see-before-we-say-what-we-found">4. We say what we can see before we say what we found</h2>
+<p>"Checked EDR, nothing found" is only true if that organisation sends EDR logs. Claiming to have checked
+telemetry that is not collected is the worst kind of error: <strong>it reassures with evidence that does not
+exist.</strong></p>
+<p>So each customer gets an inventory of <strong>the log sources actually arriving</strong>, and the investigation screen
+shows it alongside the report. Using telemetry outside that inventory as grounds is an automatic failure.
+For the gaps, the correct sentence is "we do not see this area" — and we write it.</p>
+<h2 id="5-the-grounds-are-kept-as-they-were-so-a-judgement-can-be-reviewed-later">5. The grounds are kept as they were, so a judgement can be reviewed later</h2>
+<p>A SIEM keeps changing. The same query returns something different next week. So for the cases we evaluate
+against, <strong>the grounds of the investigation are stored together as one set</strong>: the case, its alerts, the
+full rule text, the entities examined, and the results of the queries run inside the detection window.</p>
+<p>Two things follow. A judgement can be reviewed months later <strong>against the evidence it was actually made
+on</strong>. And when the model or the procedure changes, "better or worse" can be measured under identical
+conditions — a comparison that does not hold conditions fixed is not a comparison.</p>
+<h2 id="6-a-person-decides-anything-that-cannot-be-undone">6. A person decides anything that cannot be undone</h2>
+<p>Closing a case, isolating an account, blocking an address: the AI does not perform these. <strong>The action,
+its target and its grounds go onto one approval card, and it runs only when a person approves it.</strong> An
+approval button without the grounds beside it becomes a rubber stamp, which is why they are never
+separated.</p>
+<p>Rejecting requires a reason. That reason <strong>is carried into subsequent investigations</strong>, so the same
+correction does not have to be made twice.</p>
+<h2 id="7-what-we-cannot-do-yet">7. What we cannot do yet</h2>
+<p>Written plainly.</p>
+<ul>
+<li><strong>Cost figures are estimates.</strong> They are calculated from list prices, not read from an invoice. The
+  screen always says "about".</li>
+<li><strong>The AI's verdict is not the final word.</strong> It still tends to state a conclusion when the evidence is
+  thin, and we are steadily moving those cases towards "cannot determine — needs a person".</li>
+<li><strong>An accuracy figure is only meaningful with the data it was measured on.</strong> Accuracy on test data and
+  accuracy in a live environment are different numbers. The one that belongs in a contract comes from an
+  answer key built from that customer's own cases.</li>
+</ul>
+<h2 id="8-it-works-without-threat-intelligence-gti">8. It works without threat intelligence (GTI)</h2>
+<p>Google SecOps Enterprise does not include Google Threat Intelligence, and most customers run Enterprise.
+So reputation lookups are built as <strong>use them when they exist, say so when they don't</strong>.</p>
+<ul>
+<li>For a customer without GTI the lookup tools are not attached at all, and the AI is told first that
+  this customer has no threat intelligence.</li>
+<li>What remains as grounds: SecOps's own IOC feed, the entity's 30-day baseline, this customer's past
+  cases, and what the rule keyed on. The report says "reputation not available".</li>
+<li><strong>Reading a missing lookup as benign is an automatic failure</strong> - it is in the answer key.</li>
+<li>The coverage line on screen shows "No threat intel". Customers with GTI (Enterprise Plus) see no such
+  mark, and reputation lookups join the grounds.</li>
+</ul>
+<h2 id="summary">Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Common failure</th>
+<th>What this product does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reading a sample as the whole</td>
+<td>Re-counts the detection window; marks capped figures as floors</td>
+</tr>
+<tr>
+<td>Concluding without a baseline</td>
+<td>Compares against normal first; missing it costs points</td>
+</tr>
+<tr>
+<td>Inventing figures</td>
+<td>Tool responses warn about themselves; a later check compares report to tool output, mismatch fails the run</td>
+</tr>
+<tr>
+<td>Claiming telemetry that is not collected</td>
+<td>Per-customer log-source inventory, published; violations fail the run</td>
+</tr>
+<tr>
+<td>Grounds that cannot be re-examined</td>
+<td>The evidence of an investigation is kept together</td>
+</tr>
+<tr>
+<td>AI performing irreversible actions</td>
+<td>Approval gate; rejection reasons feed the next investigation</td>
+</tr>
+</tbody>
+</table></article></main></div>
+<script src="/mermaid.min.js"></script>
+<script>if(window.mermaid){mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral",flowchart:{htmlLabels:true,curve:"basis"}})}</script>
+</body></html>

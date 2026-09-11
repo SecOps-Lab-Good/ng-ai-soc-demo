@@ -1,0 +1,109 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>알림이 없는 위협을 어떻게 찾고, 룰을 어떻게 만듭니까 · NG AI SOC</title>
+<style>
+:root{--bg:#fbfbfa;--ink:#1d1f22;--ink2:#5b6068;--line:#e3e4e6;--brand:#2b5bd7;--code:#f1f2f4;--side:#f5f5f3}
+@media(prefers-color-scheme:dark){:root{--bg:#16181b;--ink:#e6e7ea;--ink2:#9aa0a8;--line:#2c3036;--brand:#8db0ff;--code:#22252a;--side:#1b1e22}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,"Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
+.wrap{display:flex;min-height:100vh}
+nav{width:260px;flex:none;background:var(--side);border-right:1px solid var(--line);padding:16px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+nav .b{display:block;font-weight:700;color:var(--brand);padding:4px 8px 12px;text-decoration:none}
+nav a{display:block;padding:6px 8px;border-radius:6px;color:var(--ink2);text-decoration:none;font-size:13px;line-height:1.35}
+nav a:hover{background:var(--code);color:var(--ink)}nav a.cur{background:var(--code);color:var(--ink);font-weight:600}
+nav .who{margin-top:16px;padding:8px;font-size:11px;color:var(--ink2);border-top:1px solid var(--line);word-break:break-all}
+nav a.lang{margin-top:10px;border-top:1px solid var(--line);padding-top:10px;color:var(--brand)}
+main{flex:1;min-width:0;padding:24px 36px 72px}article{max-width:1180px}
+h1{font-size:24px;line-height:1.25;margin:0 0 12px;text-wrap:balance}h2{font-size:18px;margin:26px 0 8px;padding-top:10px;border-top:1px solid var(--line)}h3{font-size:15px;margin:16px 0 6px}h4{font-size:14px;margin:12px 0 4px}
+p{margin:6px 0 8px}ul,ol{margin:4px 0 8px;padding-left:22px}li{margin:2px 0}li>p{margin:2px 0}.lead{color:var(--ink2)}a{color:var(--brand)}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.88em;font-family:ui-monospace,"SF Mono",Menlo,monospace}
+pre{background:var(--code);padding:10px 14px;border-radius:6px;overflow-x:auto;font-size:12px;line-height:1.45;margin:6px 0 10px}pre code{background:none;padding:0}
+pre.mermaid{background:transparent;padding:8px 0;text-align:center;font-size:14px}pre.mermaid svg{max-width:100%;height:auto}
+table{border-collapse:collapse;font-size:13px;margin:6px 0 10px;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top;line-height:1.45}th{background:var(--side)}
+blockquote{margin:8px 0;padding:6px 14px;border-left:3px solid var(--brand);color:var(--ink2);background:var(--side)}
+/* markdown's own toc wrapper is also class="toc", so styling `.toc` styled it twice - two boxes, and
+   two columns inside two columns. The box is the aside; the wrapper is flattened; the columns live on
+   the list, where an item can be told not to split across them. */
+aside.toc{background:var(--side);border:1px solid var(--line);border-radius:6px;padding:8px 16px;margin:0 0 16px;font-size:13px}
+aside.toc>div.toc{background:none;border:0;padding:0;margin:0}
+aside.toc .t{font-weight:600;margin-bottom:4px}
+aside.toc>div.toc>ul{columns:2;column-gap:24px}
+aside.toc ul{margin:0;padding-left:18px}
+aside.toc li{margin:2px 0;break-inside:avoid}
+aside.toc a{text-decoration:none}aside.toc a:hover{text-decoration:underline}
+ol.index{padding-left:22px}ol.index li{padding:6px 0;border-bottom:1px solid var(--line)}ol.index a{text-decoration:none;font-weight:500}
+.headerlink{display:none}
+@media(max-width:800px){.wrap{display:block}nav{width:auto;height:auto;position:static}main{padding:20px 16px}}
+</style></head><body><div class="wrap">
+<nav><a class="b" href="/">← NG AI SOC 콘솔</a><a href="./" class="">제품 안내</a><a href="./evidence.html" class="">AI 가 낸 판단을 어떻게 믿습니까</a><a href="./proactive.html" class="cur">알림이 없는 위협을 어떻게 찾고, 룰을 어떻게 만듭니까</a><a href="./en/proactive.html" class="lang">English</a><div class="who"></div></nav>
+<main><article><aside class="toc"><div class="t">목차</div><div class="toc">
+<ul>
+<li><a href="#1">1. 위협 헌팅 — 가설 한 문장으로 시작합니다</a></li>
+<li><a href="#2">2. 탐지 규칙 개발 — 위협 한 문장으로 룰 초안까지</a></li>
+<li><a href="#3">3. 무엇을 절대 하지 않습니까</a></li>
+<li><a href="#4">4. 어떻게 검증합니까</a></li>
+<li><a href="#_2">요약</a></li>
+</ul>
+</div>
+</aside><h1 id="_1">알림이 없는 위협을 어떻게 찾고, 룰을 어떻게 만듭니까</h1>
+<p>트리아지는 알림에서 시작합니다. 그런데 SOC 가 놓치는 것은 대개 <strong>알림이 없는 쪽</strong>에 있습니다 — 아무 룰도 울리지
+않은 행동, 그리고 그 행동을 잡을 룰이 없다는 사실 자체입니다. 이 제품의 "선제 탐지" 메뉴 둘은 그 두 가지를
+다룹니다: <strong>위협 헌팅</strong>은 가설 하나로 환경을 뒤지고, <strong>탐지 규칙 개발</strong>은 위협 하나로 룰 초안을 만듭니다.</p>
+<p>둘 다 같은 원칙 위에 있습니다. AI 는 <strong>읽기만</strong> 합니다. 케이스를 만들지 않고, 코멘트를 쓰지 않고, 룰을 설치하지
+않습니다. 그 결정은 사람의 것이고, AI 가 넘기는 것은 결정에 필요한 근거입니다.</p>
+<h2 id="1">1. 위협 헌팅 — 가설 한 문장으로 시작합니다</h2>
+<p>"LokiBot C2 로 나가는 호스트가 있다", "M365 메일함에 외부 전달 규칙을 만든 사용자가 있다". 가설을 한 문장으로
+적고 기간을 고르면 실행이 시작됩니다. 끝은 둘 중 하나입니다.</p>
+<ul>
+<li><strong>후보</strong> — 가설의 행동을 실제로 한 개체(호스트·사용자·주소)의 표. 각 행에 그것을 보여준 검색과 건수, 그리고 <strong>그
+  개체의 30일 기준선</strong>이 붙습니다. "이 호스트가 이 도메인에 접속했다"는 것과 "한 달 내내 매일 접속하던 호스트다"는
+  전혀 다른 이야기라서입니다.</li>
+<li><strong>찾지 못함</strong> — 무엇을 어느 기간에 어떤 조건으로 검색해 0건이었는지의 목록. <strong>"깨끗하다"는 말은 쓰지 않습니다.</strong>
+  0건은 그 조건으로 그 기간에 없었다는 뜻이지, 환경이 안전하다는 뜻이 아닙니다.</li>
+</ul>
+<p>가설이 요구하는 로그를 이 환경이 수집하지 않으면 헌트는 검색을 시작하지 않고 그렇게 말합니다 — "이 로그를 먼저
+수집해야 이 질문에 답할 수 있습니다". 수집하지 않는 로그에서 나온 0건은 아무 뜻이 없기 때문입니다.</p>
+<p><strong>지표(IOC) 목록</strong>을 함께 넣으면 헌트는 스윕이 됩니다: 지표 하나하나를 그 유형이 놓일 수 있는 모든 필드로 검색하고,
+나타난 지표와 나타나지 않은 지표를 각각 표로 냅니다. 목록의 지표를 하나라도 빼먹으면 자동으로 탈락입니다.</p>
+<p>헌트 화면에서 후보의 패턴을 그대로 <strong>탐지 규칙 초안으로 넘길 수 있습니다</strong> — "왜 알림이 없었나"의 답이 룰이 되는
+길입니다.</p>
+<h2 id="2">2. 탐지 규칙 개발 — 위협 한 문장으로 룰 초안까지</h2>
+<p>위협을 적으면 AI 가 다섯 단계를 밟습니다.</p>
+<ol>
+<li><strong>볼 수 있는가</strong> — 이 위협의 행동이 남는 로그를 이 환경이 수집하는지 먼저 확인합니다. 수집하지 않으면 룰을 쓰지
+   않습니다. 절대 울리지 않을 룰은 "작은 결과물"이 아니라 틀린 결과물입니다.</li>
+<li><strong>이미 잡는 룰이 있는가</strong> — 환경의 룰 목록을 끝까지 읽고 비교합니다. 이미 잡는 룰이 있으면 새 룰 대신 "그 룰을
+   손볼지"를 제안합니다. 비슷하지만 못 잡는 룰은 왜 못 잡는지 하나씩 적습니다.</li>
+<li><strong>초안</strong> — YARA-L 룰 본문. 무엇을 키로 잡는지, 무엇이 오탐을 낼지(비슷한 정상 프로세스, 점검 시간, 서비스 계정)를
+   함께 적습니다.</li>
+<li><strong>하루 몇 번 울릴까</strong> — 초안을 설치하기 전에 <strong>이 환경의 최근 7일 데이터로</strong> 셉니다. 고객마다 정한 <strong>알림 예산</strong>
+   (기본 하루 20건)을 넘으면 초안은 끝난 것이 아닙니다: 임계치(한 개체가 한 시간에 N번 넘게), 이름을 밝힌 제외(허용
+   목록에 있는 스캐너·백업 서버), 더 좁은 필드 순으로 조정하고 다시 셉니다. 조정 전후 숫자가 보고서에 남습니다.
+   예산 안으로 못 들어가면 숫자와 함께 "예산 초과"로 넘깁니다 — 조용한 척하지 않습니다.</li>
+<li><strong>문법 검증</strong> — 컴파일이 통과한 것만 "검증됨"입니다. 오류는 그대로 보여줍니다.</li>
+</ol>
+<p>화면의 초안 카드에는 이 다섯이 필로 붙습니다: 관측 가능 여부, 기존 커버리지(공백 / 기존 룰이 잡음), <strong>예상 알림 N/일
+· 예산 20</strong>, 문법 검증 N/M, 그리고 <strong>설치 안 함</strong>. 룰 본문은 그대로 복사할 수 있습니다.</p>
+<h2 id="3">3. 무엇을 절대 하지 않습니까</h2>
+<ul>
+<li><strong>룰을 설치하지 않습니다.</strong> 잘못된 룰은 알림을 폭주시키거나 조용히 안 울리게 만듭니다. 설치는 사람이, 승인 뒤에.</li>
+<li><strong>케이스를 만들거나 코멘트를 쓰지 않습니다.</strong> 헌트의 후보는 알림이 아니고, 판정을 받지 않습니다.</li>
+<li><strong>도구가 돌려주지 않은 숫자를 쓰지 않습니다.</strong> 후보의 이름과 건수는 검색 결과에 있는 것만. 없는 것은 화면이 빨간
+  상자로 표시합니다.</li>
+<li><strong>평판을 지어내지 않습니다.</strong> 위협 인텔(GTI)이 없는 환경에서는 "평판 조회 없음"이라고 쓰고, 조회가 없는 것을
+  양성으로 읽지 않습니다.</li>
+</ul>
+<h2 id="4">4. 어떻게 검증합니까</h2>
+<p>트리아지의 골든 케이스처럼, 헌팅과 규칙 개발에도 정답지가 있습니다. 다만 정답은 판정이 아니라 <strong>전제</strong>입니다 —
+이 환경이 그 행동을 볼 수 있는가, 이미 잡는 룰이 있는가, 심어 둔 신호를 찾는가, 없는 지표를 "깨끗함"이라 쓰지 않는가.
+실행마다 그 전제를 기계적으로 확인하고, 같은 조건을 세 번 돌린 결과만 결론으로 씁니다. 첫 실행들에서 실제로 잡힌
+것들 — 룰 목록을 4페이지만 읽고 "공백"이라 한 것, 관측할 수 없는데 룰을 쓴 것, 0건을 만들려고 탐지 범위를 버린 것 —
+이 지금의 절차가 된 이유입니다.</p>
+<h2 id="_2">요약</h2>
+<ul>
+<li>헌트는 가설로 시작해 <strong>후보</strong> 또는 <strong>찾지 못함</strong>으로 끝납니다. "깨끗함"은 없습니다.</li>
+<li>규칙 초안은 볼 수 있는지 → 이미 잡는지 → 초안 → <strong>하루 몇 번 울릴지</strong> → 문법 순으로 만들어지고, 설치는 하지 않습니다.</li>
+<li>알림 예산은 고객이 정하고, 예산을 넘는 초안은 조정하거나 초과라고 말합니다.</li>
+<li>두 기능 모두 읽기만 합니다. 결정은 사람의 것입니다.</li>
+</ul></article></main></div>
+<script src="/mermaid.min.js"></script>
+<script>if(window.mermaid){mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral",flowchart:{htmlLabels:true,curve:"basis"}})}</script>
+</body></html>
