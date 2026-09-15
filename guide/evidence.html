@@ -1,0 +1,153 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 가 낸 판단을 어떻게 믿습니까 · NG AI SOC</title>
+<style>
+:root{--bg:#fbfbfa;--ink:#1d1f22;--ink2:#5b6068;--line:#e3e4e6;--brand:#2b5bd7;--code:#f1f2f4;--side:#f5f5f3}
+@media(prefers-color-scheme:dark){:root{--bg:#16181b;--ink:#e6e7ea;--ink2:#9aa0a8;--line:#2c3036;--brand:#8db0ff;--code:#22252a;--side:#1b1e22}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,"Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
+.wrap{display:flex;min-height:100vh}
+nav{width:260px;flex:none;background:var(--side);border-right:1px solid var(--line);padding:16px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+nav .b{display:block;font-weight:700;color:var(--brand);padding:4px 8px 12px;text-decoration:none}
+nav a{display:block;padding:6px 8px;border-radius:6px;color:var(--ink2);text-decoration:none;font-size:13px;line-height:1.35}
+nav a:hover{background:var(--code);color:var(--ink)}nav a.cur{background:var(--code);color:var(--ink);font-weight:600}
+nav .who{margin-top:16px;padding:8px;font-size:11px;color:var(--ink2);border-top:1px solid var(--line);word-break:break-all}
+nav a.lang{margin-top:10px;border-top:1px solid var(--line);padding-top:10px;color:var(--brand)}
+main{flex:1;min-width:0;padding:24px 36px 72px}article{max-width:1180px}
+h1{font-size:24px;line-height:1.25;margin:0 0 12px;text-wrap:balance}h2{font-size:18px;margin:26px 0 8px;padding-top:10px;border-top:1px solid var(--line)}h3{font-size:15px;margin:16px 0 6px}h4{font-size:14px;margin:12px 0 4px}
+p{margin:6px 0 8px}ul,ol{margin:4px 0 8px;padding-left:22px}li{margin:2px 0}li>p{margin:2px 0}.lead{color:var(--ink2)}a{color:var(--brand)}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.88em;font-family:ui-monospace,"SF Mono",Menlo,monospace}
+pre{background:var(--code);padding:10px 14px;border-radius:6px;overflow-x:auto;font-size:12px;line-height:1.45;margin:6px 0 10px}pre code{background:none;padding:0}
+pre.mermaid{background:transparent;padding:8px 0;text-align:center;font-size:14px}pre.mermaid svg{max-width:100%;height:auto}
+table{border-collapse:collapse;font-size:13px;margin:6px 0 10px;display:block;overflow-x:auto;max-width:100%}th,td{border:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top;line-height:1.45}th{background:var(--side)}
+blockquote{margin:8px 0;padding:6px 14px;border-left:3px solid var(--brand);color:var(--ink2);background:var(--side)}
+/* markdown's own toc wrapper is also class="toc", so styling `.toc` styled it twice - two boxes, and
+   two columns inside two columns. The box is the aside; the wrapper is flattened; the columns live on
+   the list, where an item can be told not to split across them. */
+aside.toc{background:var(--side);border:1px solid var(--line);border-radius:6px;padding:8px 16px;margin:0 0 16px;font-size:13px}
+aside.toc>div.toc{background:none;border:0;padding:0;margin:0}
+aside.toc .t{font-weight:600;margin-bottom:4px}
+aside.toc>div.toc>ul{columns:2;column-gap:24px}
+aside.toc ul{margin:0;padding-left:18px}
+aside.toc li{margin:2px 0;break-inside:avoid}
+aside.toc a{text-decoration:none}aside.toc a:hover{text-decoration:underline}
+ol.index{padding-left:22px}ol.index li{padding:6px 0;border-bottom:1px solid var(--line)}ol.index a{text-decoration:none;font-weight:500}
+.headerlink{display:none}
+@media(max-width:800px){.wrap{display:block}nav{width:auto;height:auto;position:static}main{padding:20px 16px}}
+</style></head><body><div class="wrap">
+<nav><a class="b" href="/">← NG AI SOC 콘솔</a><a href="./" class="">제품 안내</a><a href="./evidence.html" class="cur">AI 가 낸 판단을 어떻게 믿습니까</a><a href="./proactive.html" class="">알림이 없는 위협을 어떻게 찾고, 룰을 어떻게 만듭니까</a><a href="./en/evidence.html" class="lang">English</a><div class="who"></div></nav>
+<main><article><aside class="toc"><div class="t">목차</div><div class="toc">
+<ul>
+<li><a href="#1">1. 알림에 딸려 온 이벤트를 전체로 착각하지 않습니다</a></li>
+<li><a href="#2">2. 평소와 비교한 뒤에 이상하다고 말합니다</a></li>
+<li><a href="#3">3. 도구가 돌려주지 않은 숫자는 보고서에 쓰지 못합니다</a></li>
+<li><a href="#4">4. 무엇을 보고 있는지 먼저 밝힙니다</a></li>
+<li><a href="#5">5. 그때의 근거를 그대로 보관하기 때문에 나중에 다시 볼 수 있습니다</a></li>
+<li><a href="#6">6. 되돌릴 수 없는 일은 사람이 결정합니다</a></li>
+<li><a href="#7">7. 우리가 아직 못 하는 것</a></li>
+<li><a href="#8-gti">8. 위협 인텔(GTI)이 없어도 됩니다</a></li>
+<li><a href="#_1">요약</a></li>
+</ul>
+</div>
+</aside><h1 id="ai">AI 가 낸 판단을 어떻게 믿습니까</h1>
+<p>AI 가 "이건 오탐입니다" 라고 말할 때, 그 말을 믿을 수 있어야 조사 시간이 줄어듭니다. 믿을 수 없으면
+분석가가 처음부터 다시 조사하게 되고, 그러면 AI 는 일을 줄인 것이 아니라 하나 더 늘린 것입니다.</p>
+<p>그래서 이 제품은 <strong>판단보다 근거를 먼저 보여줍니다.</strong> 화면에 나오는 모든 숫자는 어느 조회에서 나왔는지
+따라갈 수 있고, 따라갈 수 없는 숫자는 애초에 나오지 않도록 만들었습니다. 아래는 그 장치들입니다.</p>
+<h2 id="1">1. 알림에 딸려 온 이벤트를 전체로 착각하지 않습니다</h2>
+<p>SOAR 는 알림 하나에 <strong>표본 몇 건</strong>만 붙여 줍니다. 다운로드 1,000건으로 발동한 탐지에도 이벤트는 10건만
+붙어 옵니다. 그 10건만 보고 "10건이면 일상 업무" 라고 적으면 사건을 놓칩니다.</p>
+<p>조사를 시작하면 알림에 붙은 표본과 별개로 <strong>탐지창 전체를 다시 셉니다.</strong> 그리고 조회에 상한이 걸리면
+화면이 <code>3,000+ ⚠ 상한 도달</code> 이라고 표시합니다. 이때 모든 수치는 <strong>하한</strong>이며, 확정값처럼 읽으면 안 된다는
+뜻입니다. 숫자를 확정값처럼 보여 주면 분석가가 잘못된 정밀도로 판단합니다.</p>
+<h2 id="2">2. 평소와 비교한 뒤에 이상하다고 말합니다</h2>
+<p>실제로 있었던 예입니다. 어떤 계정이 <strong>6분 사이에 스페인과 중국에서 로그인에 성공</strong>했습니다. 물리적으로
+불가능한 이동이고, 심지어 권한이 가장 센 관리자 계정이었습니다. 탐지창 안의 두 건만 보면 침해입니다.</p>
+<p>그런데 같은 계정의 <strong>30일치를 세어 보니 매일 정확히 두 번, 같은 두 IP 에서</strong> 로그인하고 있었습니다.
+공격자라면 나올 수 없는 규칙성이고, 이 환경에서는 일상적인 자동화였습니다.</p>
+<p>조사는 "이 엔티티가 처음인가 반복인가", "이 사용자의 평소 양은 얼마인가" 를 <strong>묻고 나서</strong> 판단합니다.
+기준선을 보지 않은 판정은 그 자체로 감점 대상이고, 평가에서 걸러집니다.</p>
+<h2 id="3">3. 도구가 돌려주지 않은 숫자는 보고서에 쓰지 못합니다</h2>
+<p>이것이 생성형 AI 의 가장 위험한 실패입니다. 그럴듯한 숫자를 지어내면 <strong>읽는 사람이 알아볼 방법이 없습니다.</strong></p>
+<p>우리는 이것을 두 겹으로 막습니다.</p>
+<ul>
+<li><strong>도구 응답이 스스로 경고합니다.</strong> 목록 조회가 한 페이지만 돌려주면 응답에 "이건 한 페이지이지 전체가
+  아니며, 쓸 수 있는 표현은 'N건 이상' 뿐" 이라고 함께 담깁니다.</li>
+<li><strong>채점이 잡아냅니다.</strong> 모든 조사는 도구 호출 기록과 함께 저장되고, 별도의 검사가 보고서의 수치를 실제
+  도구 응답과 대조합니다. 어긋나면 그 조사는 점수와 무관하게 <strong>자동 실패</strong>입니다.</li>
+</ul>
+<h2 id="4">4. 무엇을 보고 있는지 먼저 밝힙니다</h2>
+<p>"EDR 을 확인한 결과 이상 없음" 이라는 문장은, 그 조직이 EDR 로그를 수집하고 있을 때만 참입니다.
+수집하지 않는 로그를 확인했다고 쓰는 것은 <strong>없는 근거로 안심시키는 것</strong>이라 가장 나쁜 오류입니다.</p>
+<p>그래서 고객마다 <strong>실제로 수집 중인 로그 소스 목록</strong>을 먼저 만들고, 조사 화면에 함께 보여 줍니다.
+그 목록에 없는 텔레메트리를 근거로 삼으면 자동 실패로 처리합니다. 목록에 없는 영역은 "우리는 이 부분을
+보지 못합니다" 라고 적는 것이 정답입니다.</p>
+<h2 id="5">5. 그때의 근거를 그대로 보관하기 때문에 나중에 다시 볼 수 있습니다</h2>
+<p>SIEM 은 계속 변합니다. 오늘 조회한 결과와 다음 주 결과가 다릅니다. 그래서 평가용으로 고른 케이스는
+<strong>조사 당시의 근거를 한 묶음으로 따로 보관합니다.</strong> 케이스, 알림, 룰 전문, 조사한 엔티티, 탐지창 안에서
+조회한 결과가 함께 들어갑니다.</p>
+<p>덕분에 두 가지가 가능합니다. <strong>몇 달 뒤에도 그때의 판단을 그때의 근거로 검토할 수 있고</strong>, 모델이나 절차를
+바꿨을 때 "좋아졌는가 나빠졌는가" 를 같은 조건에서 비교할 수 있습니다. 조건이 고정되지 않으면 그 비교는
+성립하지 않습니다.</p>
+<h2 id="6">6. 되돌릴 수 없는 일은 사람이 결정합니다</h2>
+<p>케이스 종결, 계정 격리, 차단처럼 되돌리기 어려운 조치는 AI 가 직접 실행하지 않습니다. <strong>행동과 대상과
+근거를 한 카드에 묶어 승인 화면에 올리고, 사람이 승인해야 실행됩니다.</strong> 근거 없는 승인 버튼은 고무도장이
+되기 때문에 근거를 함께 보여 주는 것이 규칙입니다.</p>
+<p>거부하실 때는 사유가 필수입니다. 그 사유는 <strong>다음 조사부터 반영됩니다.</strong> 같은 지적을 두 번 하지 않아도
+되도록 만드는 것이 목표입니다.</p>
+<h2 id="7">7. 우리가 아직 못 하는 것</h2>
+<p>정직하게 적습니다.</p>
+<ul>
+<li><strong>비용은 추정치입니다.</strong> 모델 정가로 계산하며 실제 청구서를 읽지 않습니다. 화면은 항상 "약" 을 붙입니다.</li>
+<li><strong>AI 의 판단은 최종 결론이 아닙니다.</strong> 특히 증거가 부족할 때 단정하는 경향이 남아 있어, 그런 케이스는
+  "판단 불가, 담당자 확인 필요" 로 처리되도록 계속 다듬고 있습니다.</li>
+<li><strong>정확도 수치는 환경을 밝히고 제시합니다.</strong> 시험용 데이터에서 잰 정확도와 실제 운영 환경의 정확도는
+  다릅니다. 계약에 쓰는 숫자는 그 고객의 실제 케이스로 만든 정답지에서 나와야 합니다.</li>
+</ul>
+<h2 id="8-gti">8. 위협 인텔(GTI)이 없어도 됩니다</h2>
+<p>Google SecOps Enterprise 에는 Google Threat Intelligence 가 들어 있지 않습니다 — 대부분의 고객이 그렇습니다. 그래서
+평판 조회는 <strong>있으면 쓰고 없으면 없다고 말하는</strong> 것으로 만들었습니다.</p>
+<ul>
+<li>GTI 가 없는 고객에서는 평판 조회 도구 자체를 붙이지 않고, AI 에게 "이 고객에는 위협 인텔이 없다"고 먼저 알립니다.</li>
+<li>그때 판단의 근거는 SecOps 자체의 IOC 피드, 그 개체의 30일 기준선, 이 고객의 과거 케이스, 그리고 룰이 무엇을 보고
+  울렸는가입니다. 보고서에는 "평판 조회 없음"이라고 적힙니다.</li>
+<li><strong>조회가 없는 것을 "양성"으로 읽으면 자동 탈락</strong>입니다 — 정답지에 그 조건이 들어 있습니다.</li>
+<li>화면의 커버리지 줄에 "위협 인텔 없음" 표시가 보입니다. GTI 를 쓰는 고객(Enterprise Plus)에서는 그 표시가 없고 평판
+  조회가 근거에 들어옵니다.</li>
+</ul>
+<h2 id="_1">요약</h2>
+<table>
+<thead>
+<tr>
+<th>흔한 실패</th>
+<th>이 제품의 장치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>표본을 전체로 읽음</td>
+<td>탐지창 전체 재집계, 상한 도달 시 "하한" 표시</td>
+</tr>
+<tr>
+<td>평소와 비교하지 않음</td>
+<td>기준선 조회 후 판정, 누락 시 감점</td>
+</tr>
+<tr>
+<td>없는 숫자를 지어냄</td>
+<td>도구 응답의 자체 경고 + 사후 대조 검사, 어긋나면 자동 실패</td>
+</tr>
+<tr>
+<td>없는 로그를 봤다고 함</td>
+<td>고객별 수집 로그 목록 공개, 위반 시 자동 실패</td>
+</tr>
+<tr>
+<td>근거를 나중에 확인 못 함</td>
+<td>조사 당시의 근거를 한 묶음으로 보관</td>
+</tr>
+<tr>
+<td>AI 가 되돌릴 수 없는 일을 실행</td>
+<td>승인 게이트, 거부 사유는 다음 조사에 반영</td>
+</tr>
+</tbody>
+</table></article></main></div>
+<script src="/mermaid.min.js"></script>
+<script>if(window.mermaid){mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral",flowchart:{htmlLabels:true,curve:"basis"}})}</script>
+</body></html>
